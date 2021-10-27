@@ -1,4 +1,4 @@
-package com.cayena.products.entities;
+package com.cayena.products.entity;
 
 import java.util.Date;
 

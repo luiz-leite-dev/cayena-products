@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cayena.products.entities.Product;
+import com.cayena.products.entity.Product;
 import com.cayena.products.repository.ProductRepository;
+import com.cayena.products.repository.SupplierRepository;
 
 @RestController
 @RequestMapping("/api")
@@ -27,6 +28,9 @@ public class ProductApi {
 	
 	@Autowired
 	ProductRepository productRepository;
+	
+	@Autowired
+	SupplierRepository supplierRepository;
 	
 	/** An endpoint to list all product */
 	@GetMapping("/products")
@@ -63,6 +67,7 @@ public class ProductApi {
 			_product.setUnitPrice(BigDecimal.ZERO);
 			_product.setDateOfCreation(new Date());
 			_product = productRepository.save(_product);
+			_product.setSupplier(supplierRepository.findById(_product.getSupplier().getId()).get());
 			return new ResponseEntity<>(_product, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,7 +85,9 @@ public class ProductApi {
 			_product.setSupplier(product.getSupplier());
 			_product.setUnitPrice(product.getUnitPrice());
 			_product.setDateOfTheLastUpdate(new Date());
-			return new ResponseEntity<>(productRepository.save(_product), HttpStatus.OK);
+			_product = productRepository.save(_product);
+			_product.setSupplier(supplierRepository.findById(_product.getSupplier().getId()).get());
+			return new ResponseEntity<>(_product, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
